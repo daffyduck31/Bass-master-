@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sonar & Structure — Bass Lure Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Bitter:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0A161F;
+    --bg-panel:#11212C;
+    --bg-panel-2:#1A2E3A;
+    --bg-input:#152531;
+    --accent-amber:#E2A63B;
+    --accent-amber-dim:#8a6a2c;
+    --accent-olive:#7FA06B;
+    --accent-rust:#C1502E;
+    --text-cream:#EDE7D9;
+    --text-dim:#8FA3AD;
+    --text-faint:#546874;
+    --line:#20404F;
+    --line-soft:#1A3340;
+    --radius:10px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg-deep); color:var(--text-cream); font-family:'Inter',system-ui,sans-serif; min-height:100vh;}
+  body{
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(127,160,107,0.06), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(226,166,59,0.05), transparent 45%);
+    padding-bottom:84px;
+  }
+  ::selection{background:var(--accent-amber); color:#12212B;}
+
+  /* ---------- Header ---------- */
+  header.app-head{
+    padding:22px 18px 16px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #0D1D28 0%, var(--bg-deep) 100%);
+    position:relative;
+    overflow:hidden;
+  }
+  header.app-head::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(180deg, rgba(143,163,173,0.05) 0px, rgba(143,163,173,0.05) 1px, transparent 1px, transparent 22px);
+    pointer-events:none;
+  }
+  .wordmark{
+    font-family:'Bitter', serif;
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:0.02em;
+    color:var(--text-cream);
+    display:flex; align-items:baseline; gap:8px;
+    position:relative;
+  }
+  .wordmark .depth-mark{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--accent-amber);
+    font-weight:600;
+    letter-spacing:0.08em;
+  }
+  .tagline{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    margin-top:4px;
+    letter-spacing:0.03em;
+    position:relative;
+  }
+
+  /* ---------- Tabs ---------- */
+  nav.tabbar{
+    position:fixed; bottom:0; left:0; right:0;
+    display:flex;
+    background:var(--bg-panel);
+    border-top:1px solid var(--line);
+    z-index:50;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  nav.tabbar button{
+    flex:1; background:none; border:none; color:var(--text-faint);
+    font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600;
+    letter-spacing:0.03em; text-transform:uppercase;
+    padding:10px 4px 8px; display:flex; flex-direction:column; align-items:center; gap:4px;
+    cursor:pointer;
+  }
+  nav.tabbar button svg{width:20px; height:20px; stroke:var(--text-faint); fill:none; stroke-width:1.6;}
+  nav.tabbar button.active{color:var(--accent-amber);}
+  nav.tabbar button.active svg{stroke:var(--accent-amber);}
+
+  main{max-width:640px; margin:0 auto; padding:18px 16px 30px;}
+  .view{display:none;}
+  .view.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- Section / Panel ---------- */
+  .panel{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .panel h2{
+    font-family:'Bitter', serif; font-size:15px; font-weight:700; margin:0 0 12px;
+    color:var(--text-cream); display:flex; align-items:center; gap:8px;
+  }
+  .panel h2 .num{
+    font-family:'IBM Plex Mono', monospace; color:var(--accent-amber); font-size:12px;
+  }
+  label{
+    display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--text-dim); margin:14px 0 6px;
+  }
+  label:first-of-type{margin-top:0;}
+  select, input[type=text], input[type=number], input[type=date], textarea{
+    width:100%; background:var(--bg-input); border:1px solid var(--line);
+    color:var(--text-cream); border-radius:8px; padding:11px 12px;
+    font-family:'Inter',sans-serif; font-size:14.5px;
+    appearance:none; -webkit-appearance:none;
+  }
+  select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238FA3AD' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:32px;
+  }
+  textarea{resize:vertical; min-height:64px; font-size:14px;}
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--accent-amber); outline-offset:1px;}
+
+  .chip-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    background:var(--bg-input); border:1px solid var(--line); color:var(--text-dim);
+    padding:8px 13px; border-radius:20px; font-size:12.5px; font-weight:600;
+    cursor:pointer; user-select:none;
+  }
+  .chip.selected{background:rgba(226,166,59,0.14); border-color:var(--accent-amber); color:var(--accent-amber);}
+
+  .btn-primary{
+    width:100%; background:var(--accent-amber); color:#17242C; border:none;
+    font-family:'Bitter',serif; font-weight:700; font-size:15.5px;
+    padding:14px; border-radius:9px; cursor:pointer; margin-top:16px;
+    letter-spacing:0.01em;
+  }
+  .btn-primary:active{transform:scale(0.99);}
+  .btn-secondary{
+    width:100%; background:transparent; color:var(--accent-olive); border:1px solid var(--accent-olive);
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px;
+    padding:11px; border-radius:9px; cursor:pointer; margin-top:8px;
+  }
+  .btn-ghost{
+    background:none; border:1px solid var(--line); color:var(--text-dim);
+    padding:8px 12px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer;
+  }
+
+  /* ---------- Result cards (sonar readout signature) ---------- */
+  .result-card{
+    position:relative;
+    background:
+      repeating-linear-gradient(180deg, rgba(143,163,173,0.035) 0px, rgba(143,163,173,0.035) 1px, transparent 1px, transparent 8px),
+      linear-gradient(135deg, #0E2029 0%, #14283350 100%);
+    border:1px solid var(--line);
+    border-left:3px solid var(--accent-amber);
+    border-radius:8px;
+    padding:16px;
+    margin-bottom:12px;
+  }
+  .result-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .result-rank{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--accent-olive);
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:3px;
+  }
+  .result-name{font-family:'Bitter',serif; font-weight:700; font-size:17px; color:var(--text-cream);}
+  .result-cat{font-size:12px; color:var(--text-dim); margin-top:1px;}
+  .confidence{text-align:right; flex-shrink:0;}
+  .confidence .pct{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:20px; color:var(--accent-amber);}
+  .confidence .lbl{font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--text-faint); letter-spacing:0.08em;}
+  .signal-bars{display:flex; gap:2px; margin-top:5px; justify-content:flex-end;}
+  .signal-bars span{width:4px; background:var(--line-soft); border-radius:1px;}
+  .signal-bars span:nth-child(1){height:6px;}
+  .signal-bars span:nth-child(2){height:9px;}
+  .signal-bars span:nth-child(3){height:12px;}
+  .signal-bars span:nth-child(4){height:15px;}
+  .signal-bars span:nth-child(5){height:18px;}
+  .signal-bars span.lit{background:var(--accent-amber);}
+
+  .result-detail{margin-top:12px; padding-top:12px; border-top:1px dashed var(--line-soft);}
+  .kv-row{display:flex; gap:10px; margin-bottom:7px; font-size:13px;}
+  .kv-row .k{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; width:78px; flex-shrink:0; padding-top:1px;}
+  .kv-row .v{color:var(--text-cream); line-height:1.4;}
+  .why{
+    margin-top:10px; font-size:12.5px; color:var(--text-dim); line-height:1.5;
+    background:rgba(0,0,0,0.15); border-radius:6px; padding:9px 11px;
+  }
+  .why b{color:var(--accent-olive); font-weight:600;}
+  .result-actions{display:flex; gap:8px; margin-top:12px;}
+  .result-actions button{flex:1; font-size:12px; padding:9px; border-radius:7px; cursor:pointer; font-weight:600; font-family:'Inter',sans-serif;}
+  .btn-fav{background:none; border:1px solid var(--accent-amber-dim); color:var(--accent-amber);}
+  .btn-fav.is-fav{background:var(--accent-amber); color:#17242C; border-color:var(--accent-amber);}
+  .btn-log{background:none; border:1px solid var(--line); color:var(--text-dim);}
+
+  .empty-state{text-align:center; padding:36px 20px; color:var(--text-faint);}
+  .empty-state svg{width:38px; height:38px; stroke:var(--text-faint); fill:none; stroke-width:1.3; margin-bottom:10px;}
+  .empty-state p{font-size:13px; line-height:1.6; max-width:280px; margin:0 auto;}
+
+  /* history / favorites items */
+  .log-item{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    padding:13px 14px; margin-bottom:10px;
+  }
+  .log-item .log-top{display:flex; justify-content:space-between; align-items:baseline;}
+  .log-item .log-date{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint);}
+  .log-item .log-lure{font-family:'Bitter',serif; font-weight:700; font-size:15px; margin-top:3px;}
+  .log-item .log-meta{font-size:12px; color:var(--text-dim); margin-top:4px; line-height:1.5;}
+  .log-item .log-notes{font-size:12.5px; color:var(--text-cream); margin-top:6px; font-style:italic;}
+  .log-item .log-del{margin-top:9px; font-size:11px; color:var(--accent-rust); background:none; border:none; cursor:pointer; padding:0; font-weight:600;}
+
+  .section-label{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint);
+    text-transform:uppercase; letter-spacing:0.08em; margin:20px 0 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .section-label::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  .lib-item{border-bottom:1px solid var(--line-soft); padding:13px 0;}
+  .lib-item:last-child{border-bottom:none;}
+  .lib-item .lib-name{font-family:'Bitter',serif; font-weight:700; font-size:14.5px; color:var(--text-cream);}
+  .lib-item .lib-tags{font-size:11px; color:var(--accent-olive); margin:3px 0 5px; font-family:'IBM Plex Mono',monospace;}
+  .lib-item .lib-desc{font-size:12.5px; color:var(--text-dim); line-height:1.5;}
+
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(6,12,17,0.72); z-index:100;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .modal-backdrop.active{display:flex;}
+  .modal{
+    background:var(--bg-panel); border-top:1px solid var(--line);
+    border-radius:16px 16px 0 0; padding:20px 18px 26px; width:100%; max-width:640px;
+    max-height:85vh; overflow-y:auto;
+  }
+  .modal h3{font-family:'Bitter',serif; margin:0 0 4px; font-size:17px;}
+  .modal .modal-sub{font-size:12px; color:var(--text-dim); margin-bottom:16px;}
+  .modal-close-row{display:flex; gap:10px; margin-top:16px;}
+  .modal-close-row button{flex:1;}
+
+  small.hint{display:block; font-size:11px; color:var(--text-faint); margin-top:4px; line-height:1.4;}
+</style>
+</head>
+<body>
+
+<header class="app-head">
+  <div class="wordmark">SONAR &amp; STRUCTURE <span class="depth-mark">// BASS ADVISOR</span></div>
+  <div class="tagline">largemouth &amp; smallmouth · lure &amp; technique intelligence</div>
+</header>
+
+<div id="notice-banner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:200; background:var(--accent-rust); color:#fff; padding:12px 16px; font-size:13px; font-weight:600; text-align:center;"></div>
+
+<main>
+
+  <!-- ===================== RECOMMEND VIEW ===================== -->
+  <section id="view-recommend" class="view active">
+
+    <div class="panel">
+      <h2><span class="num">01</span> Target &amp; Water</h2>
+
+      <label>Species Focus</label>
+      <select id="f-species">
+        <option value="both">Largemouth &amp; Smallmouth</option>
+        <option value="LM">Largemouth</option>
+        <option value="SM">Smallmouth</option>
+      </select>
+
+      <label>Region</label>
+      <select id="f-region">
+        <option value="northeast">Northeast / Mid-Atlantic (PA)</option>
+        <option value="southeast">Southeast / Deep South</option>
+        <option value="midwest">Midwest / Great Lakes</option>
+        <option value="texas">Texas / South-Central</option>
+        <option value="west">West / Southwest</option>
+        <option value="general">General / Other</option>
+      </select>
+      <small class="hint" id="region-note"></small>
+
+      <label>Water Type</label>
+      <select id="f-lake">
+        <option value="clear-highland">Clear highland reservoir</option>
+        <option value="stained-lowland">Stained lowland reservoir</option>
+        <option value="natural-weedy">Natural weedy lake</option>
+        <option value="river-current">River / current system (e.g. Susquehanna)</option>
+        <option value="great-lakes">Great Lake (e.g. Erie) — goby/shiner forage</option>
+        <option value="glacial-lake">Glacial / Pocono-type lake</option>
+        <option value="pond">Farm pond / small impoundment</option>
+        <option value="tidal">Tidal river</option>
+      </select>
+      <small class="hint" id="waterbody-note"></small>
+
+      <label>Water Clarity</label>
+      <div class="chip-grid" data-group="clarity">
+        <div class="chip" data-value="clear">Clear</div>
+        <div class="chip" data-value="stained">Stained</div>
+        <div class="chip" data-value="murky">Murky</div>
+      </div>
+
+      <label>Water Temp (°F)</label>
+      <input type="number" id="f-temp" placeholder="e.g. 62" min="32" max="95">
+      <small class="hint">Drives seasonal metabolism &amp; presentation speed — more precise than a calendar date.</small>
+    </div>
+
+    <div class="panel">
+      <h2><span class="num">02</span> Date, Moon &amp; Season</h2>
+
+      <label>Date</label>
+      <input type="date" id="f-date">
+
+      <div id="moon-readout" style="display:flex; align-items:center; gap:12px; margin-top:12px; padding:11px 12px; background:var(--bg-input); border:1px solid var(--line); border-radius:8px;">
+        <div id="moon-icon" style="font-size:26px; line-height:1;">🌑</div>
+        <div>
+          <div id="moon-phase-name" style="font-family:'Bitter',serif; font-weight:700; font-size:14px;">—</div>
+          <div id="moon-illum" style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);">—</div>
+        </div>
+      </div>
+      <div id="solunar-readout" style="display:none; margin-top:8px; padding:9px 12px; background:var(--bg-input); border:1px solid var(--line); border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--text-cream); line-height:1.7;"></div>
+      <small class="hint" id="moon-note">Calculated locally from the date — no location or network needed. Moon phase correlates most strongly with <b>spawn timing</b> (full moons often trigger spawning pushes); its effect on the day-to-day bite is believed by many anglers but not well-established scientifically, so treat it as a minor tiebreaker, not a primary factor.</small>
+
+      <label style="margin-top:16px;">Seasonal Stage</label>
+      <select id="f-season">
+        <option value="winter">Winter — dormant, deep, sluggish</option>
+        <option value="prespawn">Pre-Spawn — staging, moving shallow</option>
+        <option value="spawn">Spawn — bedding, sight-fishing</option>
+        <option value="postspawn">Post-Spawn — recovering, roaming</option>
+        <option value="summer">Summer — established patterns</option>
+        <option value="fall">Fall — feeding up, chasing bait</option>
+      </select>
+      <small class="hint">Auto-suggested from date + region when you pick a date — override any time.</small>
+    </div>
+
+    <div class="panel">
+      <h2><span class="num">03</span> Weather, Water Body &amp; Map</h2>
+
+      <label>Location</label>
+      <input type="text" id="f-weather-location" placeholder="Town, zip, or lake name (e.g. Raystown Lake, PA)">
+      <button class="btn-secondary" id="btn-get-weather" style="margin-top:8px;">Look Up Weather &amp; Water Data</button>
+      <small class="hint">One-time lookup only — your location isn't stored, saved, or tracked in the background. It's only used for this single search.</small>
+
+      <div id="weather-readout" style="display:none; margin-top:12px; padding:12px; background:var(--bg-input); border:1px solid var(--line); border-radius:8px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Past → Present → Forecast</div>
+        <div id="weather-summary" style="font-size:13px; color:var(--text-cream); line-height:1.6;"></div>
+      </div>
+
+      <div id="watertemp-readout" style="display:none; margin-top:10px; padding:12px; background:var(--bg-input); border:1px solid var(--accent-amber-dim); border-radius:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em;">Estimated Water Temp</div>
+          <div id="watertemp-value" style="font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:18px; color:var(--accent-amber);">—</div>
+        </div>
+        <div id="watertemp-detail" style="font-size:12px; color:var(--text-dim); line-height:1.5; margin-top:6px;"></div>
+        <button class="btn-ghost" id="btn-use-watertemp" style="margin-top:9px; width:100%;">Use This Estimate ↓</button>
+      </div>
+
+      <div id="waterbody-readout" style="display:none; margin-top:12px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin:14px 0 8px;">The Water Body</div>
+        <div id="waterbody-summary" style="font-size:13px; color:var(--text-cream); line-height:1.6; margin-bottom:10px;"></div>
+        <iframe id="waterbody-map" style="width:100%; height:220px; border:1px solid var(--line); border-radius:8px; filter:grayscale(0.15) contrast(1.05);" loading="lazy"></iframe>
+        <div id="waterbody-links" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+      </div>
+
+      <label style="margin-top:16px;">Weather Pattern <small style="text-transform:none; font-weight:400; color:var(--text-faint);">(auto-filled by lookup — adjust if needed)</small></label>
+      <select id="f-weather">
+        <option value="stable">Stable / mild — no major change in days</option>
+        <option value="prefrontal">Pre-frontal — pressure falling, storm building</option>
+        <option value="postfrontal">Post-frontal — bluebird sky, 1–2 days after a cold front</option>
+        <option value="overcast">Overcast &amp; stable — cloudy several days, no front</option>
+        <option value="windy">Windy / choppy — no front, just breeze</option>
+        <option value="rain-runoff">Rain / fresh runoff — water rising or dirtying</option>
+      </select>
+
+      <label>Time of Day</label>
+      <select id="f-time">
+        <option value="dawn">Dawn / first light</option>
+        <option value="morning">Morning</option>
+        <option value="midday">Midday — high sun</option>
+        <option value="afternoon">Afternoon</option>
+        <option value="dusk">Dusk / last light</option>
+        <option value="night">Night</option>
+      </select>
+    </div>
+
+    <div class="panel">
+      <h2><span class="num">04</span> Structure &amp; Depth</h2>
+
+      <label>Structure / Cover Present <small style="text-transform:none; font-weight:400; color:var(--text-faint);">(select all that apply)</small></label>
+      <div class="chip-grid" data-group="structure" id="structure-grid">
+        <div class="chip" data-value="rock">Rock / Riprap</div>
+        <div class="chip" data-value="wood">Wood / Laydowns</div>
+        <div class="chip" data-value="grass">Grass / Vegetation</div>
+        <div class="chip" data-value="docks">Docks</div>
+        <div class="chip" data-value="points">Points / Humps</div>
+        <div class="chip" data-value="ledges">Ledges / Drop-offs</div>
+        <div class="chip" data-value="timber">Standing Timber</div>
+        <div class="chip" data-value="bridge">Bridge Pilings</div>
+        <div class="chip" data-value="open">Open Water / Schooling</div>
+      </div>
+
+      <label>Target Depth Zone</label>
+      <div class="chip-grid" data-group="depth">
+        <div class="chip" data-value="shallow">Shallow (&lt; 5 ft)</div>
+        <div class="chip" data-value="mid">Mid (5–15 ft)</div>
+        <div class="chip" data-value="deep">Deep (15 ft+)</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-generate">Generate Recommendations</button>
+
+    <div class="section-label" id="results-label" style="display:none;">Top Matches</div>
+    <div id="results-container"></div>
+  </section>
+
+  <!-- ===================== HISTORY VIEW ===================== -->
+  <section id="view-history" class="view">
+    <div class="panel">
+      <h2>Trip Log</h2>
+      <button class="btn-secondary" id="btn-add-trip">+ Log a Trip Manually</button>
+    </div>
+    <div id="patterns-container"></div>
+    <div id="history-container"></div>
+  </section>
+
+  <!-- ===================== FAVORITES VIEW ===================== -->
+  <section id="view-favorites" class="view">
+    <div class="panel">
+      <h2>Go-To Lures</h2>
+      <p style="font-size:12.5px; color:var(--text-dim); margin:0;">Saved from recommendations. Your proven confidence picks live here.</p>
+    </div>
+    <div id="favorites-container"></div>
+  </section>
+
+  <!-- ===================== WHERE TO START VIEW ===================== -->
+  <section id="view-areas" class="view">
+    <div class="panel">
+      <h2>Where to Start</h2>
+      <p style="font-size:12.5px; color:var(--text-dim); margin:0 0 10px;">Uses your Species, Water Type, Season, Structure, and Depth from the Recommend tab to suggest the kinds of areas to check first on this fishery.</p>
+      <button class="btn-primary" id="btn-find-areas" style="margin-top:0;">Find Areas to Target</button>
+    </div>
+    <div id="areas-container"></div>
+  </section>
+
+  <!-- ===================== OUTLOOK VIEW ===================== -->
+  <section id="view-outlook" class="view">
+    <div class="panel">
+      <h2>Fishing Conditions Outlook</h2>
+      <p style="font-size:12.5px; color:var(--text-dim); margin:0 0 10px;">Scores today plus the next several days using pressure trend, sky, wind, and moon — checked when you open the app, not a background push alert (this is a single file with no server behind it, so it can't notify you while it's closed).</p>
+      <label>Location</label>
+      <input type="text" id="f-outlook-location" placeholder="Town, zip, or lake name">
+      <button class="btn-primary" id="btn-check-outlook" style="margin-top:10px;">Check Fishing Outlook</button>
+    </div>
+    <div id="outlook-container"></div>
+  </section>
+
+  <!-- ===================== LIBRARY VIEW ===================== -->
+  <section id="view-library" class="view">
+    <div class="panel">
+      <h2>Lure Library</h2>
+      <p style="font-size:12.5px; color:var(--text-dim); margin:0 0 4px;">The full database behind the advisor — browse by category.</p>
+    </div>
+    <div id="library-container"></div>
+  </section>
+
+</main>
+
+<!-- Log trip modal -->
+<div class="modal-backdrop" id="log-modal">
+  <div class="modal">
+    <h3>Log This Trip</h3>
+    <div class="modal-sub" id="log-modal-sub">Save the conditions and outcome for future reference.</div>
+    <label>Lure / Technique</label>
+    <input type="text" id="log-lure" placeholder="e.g. Green pumpkin football jig">
+    <label>Date</label>
+    <input type="date" id="log-date">
+    <label>Water Body</label>
+    <input type="text" id="log-location" placeholder="e.g. Lake name / general area">
+    <label>Result</label>
+    <select id="log-result">
+      <option value="Caught fish">Caught fish</option>
+      <option value="Follows / short strikes">Follows / short strikes</option>
+      <option value="No action">No action</option>
+    </select>
+    <label>Notes</label>
+    <textarea id="log-notes" placeholder="Conditions, sizes, anything worth remembering..."></textarea>
+    <div class="modal-close-row">
+      <button class="btn-ghost" id="log-cancel">Cancel</button>
+      <button class="btn-primary" id="log-save" style="margin-top:0;">Save Trip</button>
+    </div>
+  </div>
+</div>
+
+<nav class="tabbar">
+  <button class="tab-btn active" data-view="recommend">
+    <svg viewBox="0 0 24 24"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.2"/></svg>
+    Recommend
+  </button>
+  <button class="tab-btn" data-view="history">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+    History
+  </button>
+  <button class="tab-btn" data-view="favorites">
+    <svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7z"/></svg>
+    Favorites
+  </button>
+  <button class="tab-btn" data-view="areas">
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0112 2a7 7 0 017 7.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+    Where
+  </button>
+  <button class="tab-btn" data-view="outlook">
+    <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+    Outlook
+  </button>
+  <button class="tab-btn" data-view="library">
+    <svg viewBox="0 0 24 24"><path d="M4 4.5h9a2 2 0 012 2V20H6a2 2 0 01-2-2z"/><path d="M20 4.5h-4.5"/><path d="M20 4.5V19"/></svg>
+    Library
+  </button>
+</nav>
+
+<script>
+/* =========================================================================
+   LURE / TECHNIQUE DATABASE
+   Each entry is tagged along the same dimensions collected from the form.
+   Scoring rewards overlap; structure carries the most weight since cover
+   selection is usually the single biggest factor pros key on.
+   ========================================================================= */
+/* Reliable in-app notice — some mobile browsers/webviews silently block
+   window.alert(), which made validation and error messages invisible. This
+   banner always renders since it's just DOM, no browser dialog involved. */
+let noticeTimer = null;
+function showNotice(msg){
+  const banner = document.getElementById('notice-banner');
+  banner.textContent = msg;
+  banner.style.display = 'block';
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(()=>{ banner.style.display = 'none'; }, 5000);
+}
+
+const LURES = [
+  {id:'buzzbait', name:'Buzzbait', cat:'Topwater', species:['both'],
+    season:['postspawn','summer','fall'], clarity:['stained','murky'],
+    weather:['stable','overcast','prefrontal','windy'], time:['dawn','dusk','night'],
+    structure:['grass','wood','points'], depth:['shallow'],
+    technique:'Steady retrieve just fast enough to keep it churning the surface. Parallel to grass edges and laydowns. At night, slow the retrieve further and stick to warm summer nights over shallow grass flats — bass key on the sound and surface disturbance more than sight.',
+    tags:['reaction','low-light','aggressive']},
+
+  {id:'walkingbait', name:'Walking Topwater (Spook-style)', cat:'Topwater', species:['both'],
+    season:['postspawn','summer','fall'], clarity:['clear','stained'],
+    weather:['stable','overcast'], time:['dawn','dusk'],
+    structure:['points','open','docks'], depth:['shallow'],
+    technique:'Walk-the-dog cadence over open flats and points where bass are chasing bait near the surface.',
+    tags:['reaction','low-light','open-water']},
+
+  {id:'popper', name:'Popper', cat:'Topwater', species:['both'],
+    season:['spawn','postspawn','summer'], clarity:['clear','stained'],
+    weather:['stable','overcast'], time:['dawn','morning','dusk'],
+    structure:['docks','grass','wood'], depth:['shallow'],
+    technique:'Sharp pops with pauses around isolated cover — let the rings fully die out before the next twitch.',
+    tags:['finesse-topwater','calm-water']},
+
+  {id:'frog', name:'Hollow-Body Frog', cat:'Topwater', species:['LM','both'],
+    season:['summer','fall'], clarity:['murky','stained','clear'],
+    weather:['stable','overcast','prefrontal'], time:['morning','midday','afternoon','dusk'],
+    structure:['grass'], depth:['shallow'],
+    technique:'Walk it across matted vegetation and pause over any hole in the mat — hook set only once you feel weight.',
+    tags:['heavy-cover','matted-grass']},
+
+  {id:'spinnerbait', name:'Spinnerbait', cat:'Reaction / Moving Bait', species:['both'],
+    season:['prespawn','postspawn','fall'], clarity:['stained','murky'],
+    weather:['windy','stable','rain-runoff','prefrontal'], time:['morning','afternoon','dusk','night'],
+    structure:['wood','grass','points','timber'], depth:['shallow','mid'],
+    technique:'Steady retrieve, slow-rolling it just above cover; bump it off wood to trigger reaction strikes. Night staple: upsize to a single big Colorado blade for maximum thump/vibration, slow-roll it just above bottom on shallow flats and riprap, and hold the retrieve just slow enough to feel the blade thumping the whole way in.',
+    tags:['versatile','wind-friendly']},
+
+  {id:'chatterbait', name:'Bladed Jig (ChatterBait)', cat:'Reaction / Moving Bait', species:['both'],
+    season:['prespawn','postspawn','fall'], clarity:['stained','murky'],
+    weather:['windy','stable','overcast'], time:['morning','afternoon'],
+    structure:['grass','points','docks'], depth:['shallow','mid'],
+    technique:'Steady retrieve with occasional rips through grass to trigger reaction bites.',
+    tags:['vibration','grass-friendly']},
+
+  {id:'squarebill', name:'Squarebill Crankbait', cat:'Crankbait', species:['both'],
+    season:['prespawn','fall'], clarity:['stained','clear'],
+    weather:['stable','windy','overcast'], time:['morning','afternoon'],
+    structure:['wood','rock','points'], depth:['shallow'],
+    technique:'Cast past cover and crank steadily so it deflects off wood or rock — the deflection triggers the strike.',
+    tags:['deflection','shallow-cover']},
+
+  {id:'lipless', name:'Lipless Crankbait', cat:'Crankbait', species:['both'],
+    season:['prespawn','fall','winter'], clarity:['stained','murky'],
+    weather:['stable','windy','prefrontal'], time:['morning','afternoon'],
+    structure:['grass','open'], depth:['shallow','mid'],
+    technique:'Rip it through and rip it free of submerged grass on a steady retrieve — the sudden pop-free triggers strikes.',
+    tags:['grass-ripping','cold-water']},
+
+  {id:'medcrank', name:'Medium-Diving Crankbait (6–12 ft)', cat:'Crankbait', species:['both'],
+    season:['postspawn','summer','fall'], clarity:['stained','clear'],
+    weather:['stable','overcast'], time:['morning','midday','afternoon'],
+    structure:['points','ledges'], depth:['mid'],
+    technique:'Long casts, steady grind to reach depth, pause when it contacts structure to let it float free.',
+    tags:['structure-bump','summer-staple']},
+
+  {id:'deepcrank', name:'Deep-Diving Crankbait (12–20 ft)', cat:'Crankbait', species:['both'],
+    season:['summer'], clarity:['stained','clear'],
+    weather:['stable','overcast'], time:['midday','afternoon'],
+    structure:['ledges','points'], depth:['deep'],
+    technique:'Long casts to get it to max depth, grind it down the break so it ticks bottom the whole retrieve.',
+    tags:['ledge-fishing','summer-offshore']},
+
+  {id:'footballjig', name:'Football Jig', cat:'Jig', species:['both'],
+    season:['winter','prespawn','summer'], clarity:['clear','stained'],
+    weather:['stable','postfrontal','overcast'], time:['midday','afternoon'],
+    structure:['rock','points','ledges'], depth:['mid','deep'],
+    technique:'Drag it slowly across rock and gravel, keeping contact with bottom — bites come as a subtle heaviness.',
+    tags:['bottom-contact','smallmouth-favorite','rock']},
+
+  {id:'flipjig', name:'Flipping Jig', cat:'Jig', species:['LM','both'],
+    season:['prespawn','spawn','summer'], clarity:['murky','stained'],
+    weather:['stable','postfrontal','prefrontal'], time:['midday','morning','afternoon','night'],
+    structure:['wood','grass'], depth:['shallow'],
+    technique:'Pitch tight to cover, let it fall on slack line, hop it once or twice, then move on. At night, fish it slower and let it sit longer in each spot — bass locate it by feel and vibration in the dark, so patience in the strike zone matters more than covering water.',
+    tags:['heavy-cover','power-fishing']},
+
+  {id:'trig', name:'Texas Rig (Creature Bait)', cat:'Soft Plastic', species:['both'],
+    season:['spawn','summer','postspawn'], clarity:['stained','murky','clear'],
+    weather:['stable','postfrontal','prefrontal'], time:['midday','morning','afternoon','night'],
+    structure:['wood','grass','rock'], depth:['shallow','mid'],
+    technique:'Pitch to cover, let it settle, drag-and-hop slowly along the bottom. Classic night pattern: switch to a big black or black/blue worm, fish it painfully slow on shallow flats and points, and stay ready for a "tick" bite that\'s more felt than seen.',
+    tags:['versatile','all-around']},
+
+  {id:'wacky', name:'Wacky-Rigged Senko', cat:'Soft Plastic', species:['LM','both'],
+    season:['spawn','postspawn','summer'], clarity:['clear','stained'],
+    weather:['stable','postfrontal'], time:['morning','midday','afternoon'],
+    structure:['docks','grass'], depth:['shallow'],
+    technique:'Let it fall on slack line with no action — the subtle shimmy on the drop is the whole presentation.',
+    tags:['finesse','falling-action']},
+
+  {id:'shakyhead', name:'Shaky Head Worm', cat:'Soft Plastic', species:['both'],
+    season:['summer','fall','winter'], clarity:['clear','stained'],
+    weather:['postfrontal','stable'], time:['midday','afternoon'],
+    structure:['rock','points','docks'], depth:['mid'],
+    technique:'Slow drag-and-shake along bottom, keeping the tail quivering in place as much as moving forward.',
+    tags:['finesse','tough-bite']},
+
+  {id:'dropshot', name:'Drop Shot', cat:'Soft Plastic', species:['SM','both'],
+    season:['summer','winter','fall'], clarity:['clear'],
+    weather:['postfrontal','stable'], time:['midday','afternoon'],
+    structure:['ledges','rock','open'], depth:['deep'],
+    technique:'Hold bottom contact and shake in place, letting the bait hover right in front of the fish\'s nose.',
+    tags:['finesse','vertical','smallmouth-favorite']},
+
+  {id:'nedrig', name:'Ned Rig', cat:'Soft Plastic', species:['SM','both'],
+    season:['winter','prespawn','fall'], clarity:['clear','stained'],
+    weather:['postfrontal','stable'], time:['midday','morning','afternoon'],
+    structure:['rock','points'], depth:['shallow','mid'],
+    technique:'Cast out and simply drag-and-pause — the buoyant tail stands up off bottom on its own.',
+    tags:['finesse','cold-water','smallmouth-favorite']},
+
+  {id:'tube', name:'Tube Bait', cat:'Soft Plastic', species:['SM','both'],
+    season:['spawn','summer','fall'], clarity:['clear'],
+    weather:['stable','postfrontal'], time:['morning','midday','afternoon'],
+    structure:['rock'], depth:['shallow','mid'],
+    technique:'Hop and drag across rock/gravel, mimicking a crawfish scooting along bottom.',
+    tags:['smallmouth-specialty','rock']},
+
+  {id:'jerkbait', name:'Suspending Jerkbait', cat:'Hard Jerkbait', species:['both'],
+    season:['prespawn','fall','winter'], clarity:['clear','stained'],
+    weather:['postfrontal','stable'], time:['morning','afternoon'],
+    structure:['points','open'], depth:['mid'],
+    technique:'Twitch-twitch-pause — in cold water, extend the pause far longer than feels natural.',
+    tags:['cold-water','suspended-fish']},
+
+  {id:'blackjig', name:'Black Jig & Trailer (Night Staple)', cat:'Jig', species:['both'],
+    season:['postspawn','summer','fall'], clarity:['stained','murky','clear'],
+    weather:['stable','overcast','windy'], time:['night','dusk'],
+    structure:['rock','wood','points','docks'], depth:['shallow','mid'],
+    technique:'Cast tight to cover and crawl it painfully slow along bottom, pausing often — in the dark, bass find it by vibration and silhouette, not sight, so a big black profile with a paired black/blue trailer outfishes "natural" colors after sundown.',
+    tags:['night-staple','silhouette','slow-presentation']},
+
+  {id:'swimjig', name:'Swim Jig', cat:'Jig', species:['both'],
+    season:['postspawn','summer','fall'], clarity:['stained','clear'],
+    weather:['stable','windy'], time:['morning','afternoon','night'],
+    structure:['grass','wood'], depth:['shallow','mid'],
+    technique:'Steady swim just above and through the edges of cover, mimicking a fleeing bluegill. At night, slow the swim and stick to shallow, target-rich water — black/blue is the go-to color.',
+    tags:['grass-friendly','edge-fishing']},
+
+  {id:'swimbait', name:'Paddle-Tail Swimbait', cat:'Swimbait', species:['both'],
+    season:['summer','fall'], clarity:['stained','clear'],
+    weather:['stable','overcast'], time:['morning','midday','afternoon'],
+    structure:['open','points','ledges'], depth:['mid'],
+    technique:'Long casts, steady swim through the water column where bait schools are holding.',
+    tags:['schooling-fish','open-water']},
+
+  {id:'carolina', name:'Carolina Rig', cat:'Soft Plastic', species:['both'],
+    season:['summer'], clarity:['clear','stained'],
+    weather:['stable','postfrontal'], time:['midday','afternoon'],
+    structure:['points','rock','ledges'], depth:['deep'],
+    technique:'Drag slowly along bottom, covering water to locate scattered fish on flats and points.',
+    tags:['searching-bait','deep-flats']},
+
+  {id:'spoon', name:'Jigging Spoon', cat:'Metal', species:['both'],
+    season:['winter'], clarity:['clear','stained'],
+    weather:['stable','postfrontal'], time:['midday','afternoon'],
+    structure:['ledges','timber','open'], depth:['deep'],
+    technique:'Vertical presentation over schooled fish — sharp lift, then let it flutter back down on slack line.',
+    tags:['vertical','winter-schooling']},
+
+  {id:'bladebait', name:'Blade Bait', cat:'Metal', species:['both'],
+    season:['winter'], clarity:['clear','stained'],
+    weather:['postfrontal','stable'], time:['midday','afternoon'],
+    structure:['ledges','rock'], depth:['deep','mid'],
+    technique:'Lift-fall vertically near bottom, feeling for the thump on the fall — most bites come as it sinks.',
+    tags:['cold-water','vertical']},
+
+  {id:'hairjig', name:'Hair Jig', cat:'Jig', species:['SM','both'],
+    season:['winter','prespawn'], clarity:['clear'],
+    weather:['postfrontal','stable'], time:['midday','afternoon'],
+    structure:['rock','ledges'], depth:['mid','deep'],
+    technique:'Slow, subtle drag with long pauses — the marabou breathes on its own even when the bait is still.',
+    tags:['smallmouth-favorite','cold-water','finesse']},
+];
+
+/* =========================================================================
+   WHERE-TO-START AREAS
+   Not GPS-specific spots — categories of water/structure to check first on
+   any given fishery, scored against the same species/season/water-type/time
+   inputs used for lure recommendations, plus an optional region bonus.
+   ========================================================================= */
+const AREAS = [
+  {id:'staging-points', name:'Secondary points near spawning coves', species:['both'],
+    season:['prespawn'], waterType:['clear-highland','stained-lowland','natural-weedy','glacial-lake'],
+    time:['dawn','morning','midday','afternoon','dusk'], structureTag:'points',
+    reasoning:'Staging fish hold on the first points outside spawning pockets before pushing shallow.'},
+
+  {id:'spawn-flats', name:'Shallow, protected flats and coves with hard bottom', species:['LM','both'],
+    season:['spawn'], waterType:['clear-highland','stained-lowland','natural-weedy','glacial-lake','pond'],
+    time:['morning','midday','afternoon'], structureTag:'grass',
+    reasoning:'Classic largemouth bedding water — wind-protected, hard sand or gravel bottom.'},
+
+  {id:'spawn-rock', name:'Gravel and rock banks near current or wind', species:['SM','both'],
+    season:['spawn'], waterType:['river-current','great-lakes','clear-highland'],
+    time:['morning','midday','afternoon'], structureTag:'rock',
+    reasoning:'Smallmouth spawn on clean gravel/rock, typically slightly deeper and later than largemouth.'},
+
+  {id:'postspawn-firstcover', name:'First major cover past spawning pockets', species:['both'],
+    season:['postspawn'], waterType:['clear-highland','stained-lowland','natural-weedy'],
+    time:['morning','afternoon'], structureTag:'docks',
+    reasoning:'Recovering fish stage on the nearest cover with quick access back to deeper water.'},
+
+  {id:'summer-ledges', name:'Offshore ledges, humps, and channel bends (15–25 ft)', species:['both'],
+    season:['summer'], waterType:['clear-highland','stained-lowland','great-lakes'],
+    time:['midday','afternoon'], structureTag:'ledges',
+    reasoning:'Classic summer schooling structure — bass group up on the first significant depth break.'},
+
+  {id:'summer-grass-early', name:'Grass edges and points at first light', species:['LM','both'],
+    season:['summer'], waterType:['natural-weedy','stained-lowland'],
+    time:['dawn'], structureTag:'grass',
+    reasoning:'Early topwater window before fish slide out to deeper shade and structure.'},
+
+  {id:'fall-creeks', name:'Backs of creeks and pockets where baitfish migrate', species:['both'],
+    season:['fall'], waterType:['clear-highland','stained-lowland','natural-weedy'],
+    time:['morning','afternoon'], structureTag:'points',
+    reasoning:'Baitfish push shallow into creek arms in fall, and bass follow the migration.'},
+
+  {id:'winter-deep', name:'Deep river/reservoir channel bends and bluff walls', species:['both'],
+    season:['winter'], waterType:['clear-highland','river-current','great-lakes'],
+    time:['midday','afternoon'], structureTag:'ledges',
+    reasoning:'Wintering fish stack in the deepest water adjacent to their summer/fall haunts.'},
+
+  {id:'sm-current-seams', name:'Current seams and eddies below dams, riffles, or bridges', species:['SM','both'],
+    season:['prespawn','postspawn','summer','fall'], waterType:['river-current','tidal'],
+    time:['morning','midday','afternoon'], structureTag:'bridge',
+    reasoning:'Smallmouth sit in current breaks to ambush drifting forage with minimal energy spent.'},
+
+  {id:'sm-wind-points', name:'Rocky main-lake points with wind or current sweep', species:['SM','both'],
+    season:['summer'], waterType:['great-lakes','clear-highland'],
+    time:['midday','afternoon'], structureTag:'points',
+    reasoning:'Wind pushes baitfish onto rock points — a smallmouth magnet in clear, deep water.'},
+
+  {id:'night-shallow-flats', name:'Shallow flats adjacent to deep water, main lake', species:['both'],
+    season:['postspawn','summer'], waterType:['clear-highland','stained-lowland','natural-weedy'],
+    time:['night'], structureTag:'points',
+    reasoning:'Baitfish move shallow after dark and bass follow onto the nearest flat with quick deep-water access.'},
+
+  {id:'night-lit-docks', name:'Lighted docks and bridges', species:['both'],
+    season:['summer','postspawn','fall'], waterType:['clear-highland','stained-lowland','natural-weedy','tidal'],
+    time:['night'], structureTag:'docks',
+    reasoning:'Lights draw insects, which draw baitfish, which draw bass — a reliable night ambush point.'},
+
+  {id:'night-riprap', name:'Rock/riprap banks holding daytime heat', species:['both'],
+    season:['prespawn','fall'], waterType:['clear-highland','stained-lowland','river-current','great-lakes'],
+    time:['night'], structureTag:'rock',
+    reasoning:"Rock retains the day's heat into the evening, concentrating baitfish and bass in cooler shoulder seasons."},
+
+  {id:'night-river-ledges', name:'River/reservoir channel bends near main current', species:['both'],
+    season:['summer'], waterType:['river-current','clear-highland'],
+    time:['night'], structureTag:'ledges',
+    reasoning:'Schooling fish often move shallower at night onto the same structure they used deep during the day.'},
+
+  {id:'pa-susquehanna-ledges', name:'Susquehanna/Juniata current breaks and ledges', species:['SM','both'],
+    season:['summer','fall','prespawn'], waterType:['river-current'],
+    time:['morning','midday','afternoon'], structureTag:'ledges', region:'northeast',
+    reasoning:'A defining PA river-smallmouth pattern — fish stack on current breaks adjacent to the main channel.'},
+
+  {id:'pa-erie-structure', name:'Lake Erie rock piles and drop-offs (15–30 ft)', species:['SM','both'],
+    season:['summer','fall'], waterType:['great-lakes'],
+    time:['midday','afternoon'], structureTag:'ledges', region:'northeast',
+    reasoning:'Erie smallmouth relate tightly to deep rock structure in gin-clear water.'},
+];
+
+function scoreArea(area, input){
+  let score = 0, max = 0, matched = [];
+
+  max += 2;
+  if(input.species === 'both' || area.species.includes(input.species) || area.species.includes('both')){ score += 2; }
+
+  max += 2;
+  if(area.season.includes(input.season)){ score += 2; matched.push(`in-season for ${labelFor('season',input.season)}`); }
+
+  max += 2;
+  if(area.waterType.includes(input.waterType)){ score += 2; matched.push(`fits this water type`); }
+
+  max += 2;
+  if(area.time.includes(input.time)){ score += 2; matched.push(`productive at ${labelFor('time',input.time)}`); }
+
+  if(input.structure.size > 0){
+    max += 2;
+    if(input.structure.has(area.structureTag)){ score += 2; matched.push(`matches your selected ${labelFor('structure',area.structureTag)} cover`); }
+  }
+
+  if(area.region){
+    max += 1;
+    if(area.region === input.region){ score += 1; matched.push('a regionally distinctive pattern for your area'); }
+  }
+
+  return {area, score, max, pct: Math.round((score/max)*100), matched};
+}
+
+function renderAreas(){
+  const input = {
+    species: document.getElementById('f-species').value,
+    season: document.getElementById('f-season').value,
+    waterType: document.getElementById('f-lake').value,
+    time: document.getElementById('f-time').value,
+    region: document.getElementById('f-region').value,
+    structure: state.structure
+  };
+  const scored = AREAS.map(a => scoreArea(a, input)).sort((a,b)=> b.score - a.score).slice(0,5);
+  const container = document.getElementById('areas-container');
+  container.innerHTML = scored.map((r,i)=>`
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-rank">Priority ${i+1}</div>
+          <div class="result-name">${r.area.name}</div>
+          <div class="result-cat">${labelFor('structure',r.area.structureTag)}</div>
+        </div>
+        <div class="confidence">
+          <div class="pct">${r.pct}%</div>
+          <div class="lbl">MATCH</div>
+        </div>
+      </div>
+      <div class="result-detail">
+        <div class="kv-row"><div class="k">Why here</div><div class="v">${r.area.reasoning}</div></div>
+        <div class="why">${r.matched.length ? '<b>Matches:</b> ' + r.matched.join(' · ') + '.' : '<b>Note:</b> A reasonable starting point outside its strongest conditions.'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+document.getElementById('btn-find-areas').addEventListener('click', renderAreas);
+
+/* =========================================================================
+   REGION PROFILES
+   Adjusts water-type notes, forage base, and seasonal timing by region.
+   Northeast/PA profile reflects the deeper regional research pass.
+   ========================================================================= */
+const REGIONS = {
+  northeast: {
+    label:'Northeast / Mid-Atlantic (PA)',
+    note:'PA seasonal timing runs 4–8 weeks later than Southern defaults — spawn typically mid-April to early June, smallmouth slightly later than largemouth.',
+    forageByWater:{
+      'river-current':'Crayfish, hellgrammites, and shiners dominate — think Susquehanna/Juniata smallmouth.',
+      'great-lakes':'Round goby and emerald shiner are the primary forage — classic Lake Erie smallmouth pattern.',
+      'glacial-lake':'Panfish, shiners, and some crayfish in cooler, often clearer glacial/Pocono-type water.',
+      'clear-highland':'Gizzard shad and crayfish typical of PA reservoirs like Raystown.',
+      'stained-lowland':'Shad and bluegill forage, often stained from spring runoff.',
+      'pond':'Bluegill, minnows, and crayfish — small water forage base.',
+      'tidal':'Herring, shiners, and crabs in tidal systems like the lower Delaware.'
+    },
+    seasonMonths:{winter:[12,1,2], prespawn:[3,4], spawn:[4,5,6], postspawn:[6], summer:[7,8], fall:[9,10,11]}
+  },
+  southeast:{ label:'Southeast / Deep South', note:'Spawn runs earlier (Feb–April) with warmer water year-round.',
+    forageByWater:{}, seasonMonths:{winter:[1,2], prespawn:[2,3], spawn:[3,4], postspawn:[4,5], summer:[6,7,8,9], fall:[10,11]}},
+  midwest:{ label:'Midwest / Great Lakes', note:'Similar timing to Northeast; ice-out and thermocline timing govern the calendar.',
+    forageByWater:{'great-lakes':'Goby and emerald shiner forage on the Great Lakes proper.'}, seasonMonths:{winter:[12,1,2,3], prespawn:[4], spawn:[5,6], postspawn:[6], summer:[7,8], fall:[9,10]}},
+  texas:{ label:'Texas / South-Central', note:'Spawn can begin as early as January in southern Texas.',
+    forageByWater:{}, seasonMonths:{winter:[12,1], prespawn:[1,2], spawn:[2,3,4], postspawn:[4,5], summer:[6,7,8,9], fall:[10,11]}},
+  west:{ label:'West / Southwest', note:'Highly reservoir-driven with strong water-level fluctuation effects.',
+    forageByWater:{}, seasonMonths:{winter:[12,1,2], prespawn:[2,3], spawn:[3,4,5], postspawn:[5], summer:[6,7,8,9], fall:[10,11]}},
+  general:{ label:'General / Other', note:'', forageByWater:{}, seasonMonths:{winter:[12,1,2], prespawn:[3], spawn:[4,5], postspawn:[6], summer:[7,8], fall:[9,10,11]}}
+};
+
+function suggestSeason(region, dateStr){
+  const d = dateStr ? new Date(dateStr+'T12:00:00') : new Date();
+  const month = d.getMonth()+1;
+  const profile = REGIONS[region] || REGIONS.general;
+  for(const [season, months] of Object.entries(profile.seasonMonths)){
+    if(months.includes(month)) return season;
+  }
+  return 'summer';
+}
+
+/* Color/finish guidance keyed off clarity + weather + region/water forage + time of day.
+   Night fishing gets its own logic: bass locate lures mostly by vibration and
+   silhouette against the night sky after dark, so color selection shifts away
+   from the usual clarity-driven rules toward dark, bulky, high-vibration baits
+   almost regardless of water clarity. */
+function colorGuidance(clarity, weather, region, waterType, time){
+  let base;
+  if(time === 'night'){
+    base = 'Dark &amp; bulky — black, black/blue, or junebug. At night, bass key on silhouette against the sky and vibration through the lateral line far more than actual color, so a bold, high-contrast profile beats anything "natural." Slow down and give it more time in the strike zone than you would in daylight.';
+  } else if(clarity === 'clear'){
+    base = weather === 'postfrontal'
+      ? 'Natural &amp; translucent — green pumpkin, watermelon, or ghost shad. Downsize profile; bright sun + clear water = full visibility for line-shy fish.'
+      : 'Natural tones — green pumpkin, watermelon, shad, or smoke. Let the bait look like real forage rather than announcing itself.';
+  } else if(clarity === 'stained'){
+    base = 'Medium contrast — chartreuse/white, green pumpkin candy, or bluegill patterns. Add a rattle or blade for extra signal without overdoing color.';
+  } else if(clarity === 'murky'){
+    base = 'Bold, dark silhouettes — black/blue, junebug, or black/red. Bass locate these more by vibration and shadow than sight, so bulk and thump matter more than exact color.';
+  } else {
+    base = "Clarity not set, so this is a safe general pick — green pumpkin or watermelon covers most conditions. Add water clarity for a sharper color call.";
+  }
+  const forage = REGIONS[region] && REGIONS[region].forageByWater[waterType];
+  if(forage){
+    base += ` <b>Regional forage:</b> ${forage} Consider goby/craw/shiner-imitating patterns that match this specifically.`;
+  }
+  return base;
+}
+
+/* =========================================================================
+   MOON PHASE  (calculated locally — no network, no location)
+   Based on days since a known new moon reference, synodic month ≈ 29.53059 days.
+   ========================================================================= */
+/* =========================================================================
+   SOLUNAR TIMES  (real moon transit/antitransit + moonrise/moonset)
+   Computed entirely locally — low-precision lunar position (truncated Meeus
+   series, accurate to a few arcminutes, plenty for rise/set/transit timing
+   to within a few minutes) plus standard sidereal-time/altitude math.
+   Major periods = moon overhead (transit) or underfoot (antitransit), each
+   roughly a 2-hour window. Minor periods = moonrise/moonset, roughly 1 hour.
+   This is presented as informational — solunar theory's link to actual
+   daily bite timing is weak in the research; the spawn-timing correlation
+   with moon phase is the well-supported part, not the hour-by-hour windows.
+   ========================================================================= */
+function normDeg(d){ d = d % 360; return d < 0 ? d + 360 : d; }
+function toRad(d){ return d * Math.PI / 180; }
+function toDeg(r){ return r * 180 / Math.PI; }
+
+function moonEquatorialAt(dateUTC){
+  const JD = dateUTC.getTime()/86400000 + 2440587.5;
+  const T = (JD - 2451545.0) / 36525;
+  const Lp = normDeg(218.3164477 + 481267.88123421*T - 0.0015786*T*T + Math.pow(T,3)/538841);
+  const D  = normDeg(297.8501921 + 445267.1114034*T  - 0.0018819*T*T + Math.pow(T,3)/545868);
+  const M  = normDeg(357.5291092 + 35999.0502909*T   - 0.0001536*T*T + Math.pow(T,3)/24490000);
+  const Mp = normDeg(134.9633964 + 477198.8675055*T  + 0.0087414*T*T + Math.pow(T,3)/69699);
+  const F  = normDeg(93.2720950  + 483202.0175233*T  - 0.0036539*T*T - Math.pow(T,3)/3526000);
+  const rD=toRad(D), rM=toRad(M), rMp=toRad(Mp), rF=toRad(F);
+
+  let lambda = Lp
+    + 6.289*Math.sin(rMp) - 1.274*Math.sin(rMp-2*rD) + 0.658*Math.sin(2*rD)
+    - 0.186*Math.sin(rM)  - 0.059*Math.sin(2*rMp-2*rD) - 0.057*Math.sin(rMp-2*rD+rM)
+    + 0.053*Math.sin(rMp+2*rD) + 0.046*Math.sin(2*rD-rM) + 0.041*Math.sin(rMp-rM)
+    - 0.035*Math.sin(rD) - 0.031*Math.sin(rMp+rM) - 0.015*Math.sin(2*rF-2*rD) + 0.011*Math.sin(rMp-4*rD);
+  lambda = normDeg(lambda);
+
+  const beta = 5.128*Math.sin(rF) + 0.281*Math.sin(rMp+rF) + 0.278*Math.sin(rMp-rF)
+    + 0.173*Math.sin(2*rD-rF) + 0.055*Math.sin(2*rD-rMp+rF) + 0.046*Math.sin(2*rD-rMp-rF)
+    + 0.033*Math.sin(2*rD+rF) + 0.017*Math.sin(2*rMp+rF);
+
+  const epsilon = 23.4393 - 0.0130*T;
+  const rLambda = toRad(lambda), rBeta = toRad(beta), rEps = toRad(epsilon);
+  const ra = Math.atan2(Math.sin(rLambda)*Math.cos(rEps) - Math.tan(rBeta)*Math.sin(rEps), Math.cos(rLambda));
+  const dec = Math.asin(Math.sin(rBeta)*Math.cos(rEps) + Math.cos(rBeta)*Math.sin(rEps)*Math.sin(rLambda));
+  return { raDeg: normDeg(toDeg(ra)), decRad: dec, JD, T };
+}
+
+function gmstDeg(JD, T){
+  return normDeg(280.46061837 + 360.98564736629*(JD-2451545.0) + 0.000387933*T*T - Math.pow(T,3)/38710000);
+}
+
+function moonAltitudeHA(dateUTC, latRad, lonDeg){
+  const {raDeg, decRad, JD, T} = moonEquatorialAt(dateUTC);
+  const lst = normDeg(gmstDeg(JD,T) + lonDeg);
+  const ha0to360 = normDeg(lst - raDeg);
+  const haRad = toRad(ha0to360 > 180 ? ha0to360 - 360 : ha0to360);
+  const alt = Math.asin(Math.sin(latRad)*Math.sin(decRad) + Math.cos(latRad)*Math.cos(decRad)*Math.cos(haRad));
+  return { altDeg: toDeg(alt), ha0to360 };
+}
+
+function computeSolunarTimes(dateStr, lat, lon, utcOffsetSeconds){
+  const latRad = toRad(lat);
+  const h0 = 0.125; // standard moon rise/set altitude threshold (deg), accounts for parallax vs refraction
+  const localMidnightUTC = new Date(dateStr + 'T00:00:00Z').getTime() - utcOffsetSeconds*1000;
+  const stepMs = 5*60*1000;
+  const startMs = localMidnightUTC - 2*3600*1000;
+  const endMs = localMidnightUTC + 28*3600*1000;
+
+  const samples = [];
+  let cum = null, prevMod = null;
+  for(let t = startMs; t <= endMs; t += stepMs){
+    const {altDeg, ha0to360} = moonAltitudeHA(new Date(t), latRad, lon);
+    if(cum === null){ cum = ha0to360; }
+    else { cum += ((ha0to360 - prevMod + 540) % 360) - 180; }
+    prevMod = ha0to360;
+    samples.push({ t, altDeg, cumHA: cum });
+  }
+
+  const localTimeOf = ms => new Date(ms + utcOffsetSeconds*1000);
+  const withinTargetDay = ms => ms >= localMidnightUTC && ms < localMidnightUTC + 24*3600*1000;
+  const events = { moonrise:null, moonset:null, transit:null, antitransit:null };
+
+  for(let i=1;i<samples.length;i++){
+    const a = samples[i-1], b = samples[i];
+    if(a.altDeg < h0 && b.altDeg >= h0){
+      const tCross = a.t + (h0-a.altDeg)/(b.altDeg-a.altDeg)*(b.t-a.t);
+      if(withinTargetDay(tCross)) events.moonrise = localTimeOf(tCross);
+    }
+    if(a.altDeg >= h0 && b.altDeg < h0){
+      const tCross = a.t + (a.altDeg-h0)/(a.altDeg-b.altDeg)*(b.t-a.t);
+      if(withinTargetDay(tCross)) events.moonset = localTimeOf(tCross);
+    }
+    const lowMult = Math.floor(a.cumHA/180), highMult = Math.floor(b.cumHA/180);
+    if(highMult > lowMult){
+      for(let k=lowMult+1;k<=highMult;k++){
+        const tCross = a.t + (k*180 - a.cumHA)/(b.cumHA-a.cumHA)*(b.t-a.t);
+        if(!withinTargetDay(tCross)) continue;
+        if((((k%2)+2)%2) === 0) events.transit = localTimeOf(tCross);
+        else events.antitransit = localTimeOf(tCross);
+      }
+    }
+  }
+  return events;
+}
+
+function formatLocalTime(d){
+  return d ? d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}) : '—';
+}
+
+// Stores {lat, lon, utcOffsetSeconds} from the most recent successful
+// weather/outlook lookup, so solunar times can be computed for that location.
+let lastLocationCoords = null;
+
+function getMoonPhase(dateStr){
+  const date = dateStr ? new Date(dateStr+'T12:00:00Z') : new Date();
+  const knownNewMoon = new Date(Date.UTC(2000,0,6,18,14,0)); // Jan 6, 2000 18:14 UTC
+  const synodic = 29.530588853;
+  const daysSince = (date - knownNewMoon) / 86400000;
+  let phaseFrac = (daysSince % synodic) / synodic;
+  if(phaseFrac < 0) phaseFrac += 1;
+  const illum = Math.round((1 - Math.cos(2*Math.PI*phaseFrac)) / 2 * 100);
+
+  let name, icon;
+  if(phaseFrac < 0.03 || phaseFrac > 0.97){ name='New Moon'; icon='🌑'; }
+  else if(phaseFrac < 0.22){ name='Waxing Crescent'; icon='🌒'; }
+  else if(phaseFrac < 0.28){ name='First Quarter'; icon='🌓'; }
+  else if(phaseFrac < 0.47){ name='Waxing Gibbous'; icon='🌔'; }
+  else if(phaseFrac < 0.53){ name='Full Moon'; icon='🌕'; }
+  else if(phaseFrac < 0.72){ name='Waning Gibbous'; icon='🌖'; }
+  else if(phaseFrac < 0.78){ name='Last Quarter'; icon='🌗'; }
+  else { name='Waning Crescent'; icon='🌘'; }
+
+  const spawnRelevant = (name === 'Full Moon' || name === 'New Moon');
+  return {name, icon, illum, phaseFrac, spawnRelevant};
+}
+
+function updateMoonDisplay(){
+  const dateStr = document.getElementById('f-date').value;
+  const moon = getMoonPhase(dateStr);
+  document.getElementById('moon-icon').textContent = moon.icon;
+  document.getElementById('moon-phase-name').textContent = moon.name;
+  document.getElementById('moon-illum').textContent = moon.illum + '% illuminated';
+  const noteEl = document.getElementById('moon-note');
+  if(moon.spawnRelevant){
+    noteEl.innerHTML = `<b>${moon.name}s often trigger spawning pushes</b> in largemouth &amp; smallmouth — if you're in pre-spawn/spawn season, expect more fish to move shallow around this date. Its effect on the day-to-day bite otherwise is debated among anglers and not well-supported scientifically — treated here as a minor factor.`;
+  } else {
+    noteEl.innerHTML = `Calculated locally from the date — no location or network needed. Moon phase correlates most strongly with <b>spawn timing</b> around full and new moons; its effect on the daily bite is popular belief more than established science, so it's weighted lightly here.`;
+  }
+
+  const sol = document.getElementById('solunar-readout');
+  if(lastLocationCoords && dateStr){
+    const ev = computeSolunarTimes(dateStr, lastLocationCoords.lat, lastLocationCoords.lon, lastLocationCoords.utcOffsetSeconds);
+    sol.innerHTML = `<b style="color:var(--accent-amber);">MAJOR</b> (overhead/underfoot, ~2hr window): ${formatLocalTime(ev.transit)} · ${formatLocalTime(ev.antitransit)}<br><b style="color:var(--accent-olive);">MINOR</b> (rise/set, ~1hr window): ${formatLocalTime(ev.moonrise)} · ${formatLocalTime(ev.moonset)}`;
+    sol.style.display = 'block';
+  } else {
+    sol.style.display = 'none';
+  }
+}
+
+/* =========================================================================
+   GEOCODING
+   Open-Meteo's geocoder alone is really a city/town gazetteer — it often
+   can't find named lakes and reservoirs. This tries several strategies in
+   order: OpenStreetMap/Nominatim first (best coverage for water bodies,
+   since OSM tags them directly), then Open-Meteo (good for towns), then
+   a handful of query rewrites (appending "Lake", "Reservoir", ", Pennsylvania",
+   ", USA") to catch cases where the user just typed a bare name like "Blue Marsh".
+   ========================================================================= */
+async function tryNominatim(q){
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data || !data.length) return null;
+    const p = data[0];
+    const waterName = p.address && (p.address.water || p.address.lake || p.address.reservoir);
+    return {
+      latitude: parseFloat(p.lat),
+      longitude: parseFloat(p.lon),
+      name: waterName || p.display_name.split(',')[0],
+      admin1: p.address && p.address.state
+    };
+  }catch(e){ return null; }
+}
+
+async function tryOpenMeteo(q){
+  try{
+    const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data.results || !data.results.length) return null;
+    const p = data.results[0];
+    return { latitude: p.latitude, longitude: p.longitude, name: p.name, admin1: p.admin1 };
+  }catch(e){ return null; }
+}
+
+async function geocodeLocation(query){
+  let result = await tryNominatim(query);
+  if(result) return result;
+
+  result = await tryOpenMeteo(query);
+  if(result) return result;
+
+  const rewrites = [query+' Lake', query+' Reservoir', query+', Pennsylvania', query+', USA'];
+  for(const q of rewrites){
+    result = await tryNominatim(q);
+    if(result) return result;
+  }
+  return null;
+}
+
+/* =========================================================================
+   WEATHER LOOKUP  (one-time, manual location text — no GPS, nothing stored)
+   Uses Open-Meteo's free, keyless geocoding + forecast APIs.
+   Pulls past days (pressure/temp trend), current conditions, and forecast,
+   then classifies into one of the app's weather-pattern buckets.
+   ========================================================================= */
+let lastDailyTemps = null; // {max:[], min:[], todayIdx} — kept so the water-temp
+                            // estimate can be recalculated if Water Type changes
+                            // without re-fetching weather.
+
+/* Estimate surface water temp from the recent air-temp trend.
+   Heuristic: water temp lags air temp because of thermal mass. Small/shallow,
+   fast-mixing water tracks the last ~3 days of air temp closely; large or deep
+   water bodies respond much more slowly, so their estimate leans on the fuller
+   7-day average instead. This is a rough surface-temp approximation, not a
+   substitute for an actual thermometer or electronics reading. */
+const WATER_TEMP_LAG_WEIGHT = {
+  // Weight given to the most recent 3 days vs the full 7-day average.
+  // Higher = more responsive / less thermal mass.
+  'pond': 0.70,
+  'river-current': 0.55,
+  'tidal': 0.50,
+  'natural-weedy': 0.40,
+  'glacial-lake': 0.35,
+  'stained-lowland': 0.35,
+  'clear-highland': 0.30,
+  'great-lakes': 0.15
+};
+
+function computeWaterTempEstimate(){
+  if(!lastDailyTemps) return null;
+  const {max, min, todayIdx} = lastDailyTemps;
+  const dailyAvg = [];
+  for(let i = 0; i <= todayIdx; i++){
+    if(max[i] != null && min[i] != null) dailyAvg.push((max[i]+min[i])/2);
+  }
+  if(dailyAvg.length < 3) return null;
+
+  const last3 = dailyAvg.slice(-3);
+  const recentAvg3 = last3.reduce((a,b)=>a+b,0) / last3.length;
+  const fullWindow = dailyAvg.slice(-7);
+  const fullAvg7 = fullWindow.reduce((a,b)=>a+b,0) / fullWindow.length;
+
+  const waterType = document.getElementById('f-lake').value;
+  const weightRecent = WATER_TEMP_LAG_WEIGHT[waterType] ?? 0.4;
+  const estimate = weightRecent*recentAvg3 + (1-weightRecent)*fullAvg7;
+
+  return { estimate: Math.round(estimate), recentAvg3: Math.round(recentAvg3), fullAvg7: Math.round(fullAvg7), waterType };
+}
+
+function renderWaterTempEstimate(){
+  const box = document.getElementById('watertemp-readout');
+  if(!box) return;
+  const result = computeWaterTempEstimate();
+  if(!result){ box.style.display = 'none'; return; }
+  const waterLabel = document.getElementById('f-lake').options[document.getElementById('f-lake').selectedIndex].text;
+  document.getElementById('watertemp-value').textContent = `${result.estimate}°F`;
+  document.getElementById('watertemp-detail').innerHTML =
+    `Derived from the last 3-day (${result.recentAvg3}°F avg) vs 7-day (${result.fullAvg7}°F avg) air temp, weighted for a <b>${waterLabel}</b>'s thermal mass. General estimate only — actual temp varies with depth, sun exposure, wind, and recent rain; a real thermometer or your electronics will always beat this.`;
+  box.style.display = 'block';
+}
+async function lookupWeather(){
+  const locInput = document.getElementById('f-weather-location').value.trim();
+  const readout = document.getElementById('weather-readout');
+  const summaryEl = document.getElementById('weather-summary');
+  if(!locInput){ showNotice('Type a town, zip, or lake name first.'); return; }
+
+  const btn = document.getElementById('btn-get-weather');
+  const originalText = btn.textContent;
+  btn.textContent = 'Looking up…'; btn.disabled = true;
+
+  try{
+    const geo = await geocodeLocation(locInput);
+    if(!geo){
+      showNotice("Couldn't find that location. Try a nearby town, zip code, or adding the county/state.");
+      return;
+    }
+    const {latitude, longitude, name, admin1} = geo;
+
+    // Fire the water-body lookup in parallel — independent of weather succeeding
+    lookupWaterBody(locInput, latitude, longitude, name, admin1).catch(()=>{});
+
+    const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,surface_pressure,cloud_cover,wind_speed_10m,weather_code&hourly=surface_pressure,temperature_2m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&past_days=7&forecast_days=3&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`);
+    const wx = await wxRes.json();
+
+    const current = wx.current;
+    const hourlyPressure = wx.hourly.surface_pressure;
+    // Pressure trend over the last 3 days specifically (past_days=7, so "3 days ago" sits at hour index (7-3)*24)
+    const pastPressure = hourlyPressure[(7-3)*24] ?? hourlyPressure[0];
+    const nowPressure = current.surface_pressure;
+    const pressureTrend3d = nowPressure - pastPressure;
+
+    // Forecast direction: compare today's max temp to day-after-tomorrow, and check upcoming precip
+    const daily = wx.daily;
+    const todayIdx = 7; // past_days=7 means index 7 is "today"
+    const futurePrecip = (daily.precipitation_sum[todayIdx+1]||0) + (daily.precipitation_sum[todayIdx+2]||0);
+    const windNow = current.wind_speed_10m;
+
+    // Classify weather pattern
+    let pattern = 'stable';
+    if(futurePrecip > 0.3 && pressureTrend3d < -1){ pattern = 'prefrontal'; }
+    else if(pressureTrend3d > 2 && current.cloud_cover < 30){ pattern = 'postfrontal'; }
+    else if(current.cloud_cover > 70 && Math.abs(pressureTrend3d) < 2){ pattern = 'overcast'; }
+    else if(windNow > 15){ pattern = 'windy'; }
+    else if((daily.precipitation_sum[todayIdx]||0) > 0.2){ pattern = 'rain-runoff'; }
+    document.getElementById('f-weather').value = pattern;
+
+    // Store the 7-day daily temps so the water-temp estimate can be recomputed
+    // later (e.g. if the user changes Water Type) without a fresh fetch.
+    lastDailyTemps = { max: daily.temperature_2m_max, min: daily.temperature_2m_min, todayIdx };
+    lastLocationCoords = { lat: latitude, lon: longitude, utcOffsetSeconds: wx.utc_offset_seconds };
+    updateMoonDisplay();
+    renderWaterTempEstimate();
+
+    const trendWord = pressureTrend3d > 1 ? 'rising' : (pressureTrend3d < -1 ? 'falling' : 'steady');
+    summaryEl.innerHTML = `
+      <b>${name}${admin1 ? ', '+admin1 : ''}</b><br>
+      Past 3 days → now: pressure ${trendWord} (${pastPressure.toFixed(0)} → ${nowPressure.toFixed(0)} hPa)<br>
+      Current: ${Math.round(current.temperature_2m)}°F, ${current.cloud_cover}% cloud cover, wind ${Math.round(windNow)} mph<br>
+      Next 2 days: ${futurePrecip > 0.1 ? 'precipitation expected (' + futurePrecip.toFixed(1) + '" total)' : 'little to no precipitation expected'}<br>
+      <span style="color:var(--accent-amber);">→ Auto-set weather pattern to: ${labelFor('weather',pattern)}</span>
+    `;
+    readout.style.display = 'block';
+  }catch(err){
+    showNotice("Weather lookup failed — check your connection, or just set the Weather Pattern manually below.");
+  }finally{
+    btn.textContent = originalText; btn.disabled = false;
+  }
+}
+document.getElementById('btn-get-weather').addEventListener('click', lookupWeather);
+
+/* =========================================================================
+   WATER BODY / MAP RESEARCH  (one-time lookup, same location text, no tracking)
+   - Elevation: Open-Meteo elevation API (free, keyless)
+   - Classification + bounding box: OpenStreetMap Nominatim (free, keyless)
+   - Live map: OpenStreetMap embed (no API key required)
+   - Quick links: Google Maps satellite, OSM, and site-scoped searches for
+     Navionics / Fishidy / state fish & wildlife agency data
+   ========================================================================= */
+async function lookupWaterBody(queryText, lat, lon, geoName, admin1){
+  const wrap = document.getElementById('waterbody-readout');
+  const summaryEl = document.getElementById('waterbody-summary');
+  const mapEl = document.getElementById('waterbody-map');
+  const linksEl = document.getElementById('waterbody-links');
+
+  let classLine = '';
+  let bbox = [lat-0.02, lat+0.02, lon-0.03, lon+0.03]; // fallback box: [south, north, west, east]
+
+  try{
+    const nomRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(queryText)}&format=json&limit=1&addressdetails=0&extratags=1`);
+    if(nomRes.ok){
+      const nomData = await nomRes.json();
+      if(nomData && nomData.length){
+        const place = nomData[0];
+        if(place.boundingbox && place.boundingbox.length === 4){
+          bbox = place.boundingbox.map(Number); // [south, north, west, east]
+        }
+        const type = (place.type || '').replace(/_/g,' ');
+        const cls = (place.class || '').replace(/_/g,' ');
+        if(['water','reservoir','lake','river','stream'].includes(type) || cls === 'water' || cls === 'waterway'){
+          classLine = `Identified on OpenStreetMap as a <b>${type || cls}</b>.`;
+        } else {
+          classLine = `OpenStreetMap match: <i>${place.display_name.split(',').slice(0,2).join(',')}</i> (used to center the map — verify this is the right spot).`;
+        }
+      }
+    }
+  }catch(e){ /* Nominatim optional — fall through to elevation + map with default box */ }
+
+  let elevLine = '';
+  try{
+    const elevRes = await fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lon}`);
+    if(elevRes.ok){
+      const elevData = await elevRes.json();
+      if(elevData.elevation && elevData.elevation.length){
+        const ft = Math.round(elevData.elevation[0] * 3.28084);
+        elevLine = `Elevation ≈ ${ft} ft.`;
+      }
+    }
+  }catch(e){ /* elevation optional */ }
+
+  const region = document.getElementById('f-region').value;
+  const agencySite = region === 'northeast' ? 'fishandboat.com' : null;
+  const label = geoName + (admin1 ? ', ' + admin1 : '');
+  const q = encodeURIComponent(label);
+
+  summaryEl.innerHTML = `<b>${label}</b><br>${[classLine, elevLine].filter(Boolean).join(' ')}`;
+
+  mapEl.src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox[2]}%2C${bbox[0]}%2C${bbox[3]}%2C${bbox[1]}&layer=mapnik&marker=${lat}%2C${lon}`;
+
+  const links = [
+    {label:'Satellite View', url:`https://www.google.com/maps/@${lat},${lon},14z/data=!3m1!1e3`},
+    {label:'OpenStreetMap', url:`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=13/${lat}/${lon}`},
+    {label:'Navionics Charts', url:`https://www.google.com/search?q=site:webapp.navionics.com+${q}`},
+    {label:'Fishing Reports', url:`https://www.google.com/search?q=site:fishidy.com+${q}`},
+  ];
+  if(agencySite){
+    links.push({label:'PA Fish & Boat Data', url:`https://www.google.com/search?q=site:${agencySite}+${q}`});
+  } else {
+    links.push({label:'State Agency Data', url:`https://www.google.com/search?q=${q}+fish+wildlife+lake+survey+depth+map`});
+  }
+
+  linksEl.innerHTML = links.map(l=>`<a href="${l.url}" target="_blank" rel="noopener" class="chip" style="text-decoration:none; display:inline-block;">${l.label} ↗</a>`).join('');
+
+  wrap.style.display = 'block';
+}
+
+/* =========================================================================
+   FORM STATE
+   ========================================================================= */
+const state = { clarity:null, structure:new Set(), depth:null };
+
+// Date + region wiring
+const dateInput = document.getElementById('f-date');
+dateInput.value = new Date().toISOString().slice(0,10);
+dateInput.addEventListener('change', ()=>{
+  updateMoonDisplay();
+  document.getElementById('f-season').value = suggestSeason(document.getElementById('f-region').value, dateInput.value);
+});
+document.getElementById('f-region').addEventListener('change', (e)=>{
+  const r = REGIONS[e.target.value];
+  document.getElementById('region-note').textContent = r.note || '';
+  document.getElementById('f-season').value = suggestSeason(e.target.value, dateInput.value);
+});
+document.getElementById('f-lake').addEventListener('change', ()=>{ updateWaterbodyNote(); renderWaterTempEstimate(); });
+document.getElementById('btn-use-watertemp').addEventListener('click', ()=>{
+  const result = computeWaterTempEstimate();
+  if(result) document.getElementById('f-temp').value = result.estimate;
+});
+function updateWaterbodyNote(){
+  const region = document.getElementById('f-region').value;
+  const water = document.getElementById('f-lake').value;
+  const forage = REGIONS[region] && REGIONS[region].forageByWater[water];
+  document.getElementById('waterbody-note').textContent = forage || '';
+}
+
+// Initial paint for region note, water forage note, moon display, and season suggestion
+document.getElementById('region-note').textContent = REGIONS[document.getElementById('f-region').value].note || '';
+updateWaterbodyNote();
+updateMoonDisplay();
+document.getElementById('f-season').value = suggestSeason(document.getElementById('f-region').value, dateInput.value);
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const group = chip.parentElement.dataset.group;
+    if(group === 'structure'){
+      chip.classList.toggle('selected');
+      if(chip.classList.contains('selected')) state.structure.add(chip.dataset.value);
+      else state.structure.delete(chip.dataset.value);
+    } else {
+      chip.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      chip.classList.add('selected');
+      state[group] = chip.dataset.value;
+    }
+  });
+});
+
+/* =========================================================================
+   SCORING ENGINE
+   ========================================================================= */
+function scoreLure(lure, input){
+  let score = 0, max = 0, matched = [];
+
+  max += 2;
+  if(lure.species.includes('both') || lure.species.includes(input.species) || input.species==='both'){
+    if(input.species === 'both' || lure.species.includes(input.species) || lure.species.includes('both')){ score += 2; }
+  }
+
+  max += 2;
+  if(lure.season.includes(input.season)){ score += 2; matched.push(`in-season for ${labelFor('season',input.season)}`); }
+
+  if(input.clarity){
+    max += 2;
+    if(lure.clarity.includes(input.clarity)){ score += 2; matched.push(`suited to ${input.clarity} water`); }
+  }
+
+  max += 2;
+  if(lure.weather.includes(input.weather)){ score += 2; matched.push(`fits a ${labelFor('weather',input.weather)} pattern`); }
+
+  max += 3;
+  if(lure.time.includes(input.time)){ score += 3; matched.push(`effective at ${labelFor('time',input.time)}`); }
+
+  const structHits = [...input.structure].filter(s=>lure.structure.includes(s));
+  if(input.structure.size > 0){
+    max += 3;
+    if(structHits.length){
+      score += Math.min(3, structHits.length * 1.5);
+      matched.push(`matches ${structHits.map(s=>labelFor('structure',s)).join(', ')} cover`);
+    }
+  }
+
+  if(input.depth){
+    max += 2;
+    if(lure.depth.includes(input.depth)){ score += 2; matched.push(`runs the ${input.depth} zone you specified`); }
+  }
+
+  // Moon phase — light weight tiebreaker, mainly relevant during spawn-adjacent seasons
+  max += 1;
+  if(input.moon && input.moon.spawnRelevant && ['prespawn','spawn'].includes(input.season) && lure.season.includes('spawn')){
+    score += 1; matched.push(`${input.moon.name.toLowerCase()} aligns with a spawn push`);
+  } else {
+    score += 0.5; // neutral baseline so moon never tanks a score
+  }
+
+  return {lure, score, max, pct: Math.round((score/max)*100), matched};
+}
+
+const LABELS = {
+  season:{winter:'winter',prespawn:'pre-spawn',spawn:'the spawn',postspawn:'post-spawn',summer:'summer',fall:'fall'},
+  weather:{stable:'stable',prefrontal:'pre-frontal',postfrontal:'post-frontal',overcast:'overcast/stable',windy:'windy',"rain-runoff":'rain/runoff'},
+  time:{dawn:'dawn',morning:'morning',midday:'midday',afternoon:'afternoon',dusk:'dusk',night:'night'},
+  structure:{rock:'rock/riprap',wood:'wood',grass:'grass',docks:'docks',points:'points/humps',ledges:'ledges',timber:'timber',bridge:'bridge pilings',open:'open water'}
+};
+function labelFor(cat,val){ return (LABELS[cat] && LABELS[cat][val]) || val; }
+
+/* =========================================================================
+   GENERATE + RENDER RESULTS
+   ========================================================================= */
+document.getElementById('btn-generate').addEventListener('click', ()=>{
+  const input = {
+    species: document.getElementById('f-species').value,
+    region: document.getElementById('f-region').value,
+    lake: document.getElementById('f-lake').value,
+    clarity: state.clarity,
+    temp: document.getElementById('f-temp').value,
+    date: document.getElementById('f-date').value,
+    season: document.getElementById('f-season').value,
+    weather: document.getElementById('f-weather').value,
+    time: document.getElementById('f-time').value,
+    structure: state.structure,
+    depth: state.depth,
+    moon: getMoonPhase(document.getElementById('f-date').value)
+  };
+
+  if(!input.clarity || !input.depth){
+    showNotice("Generating with what you've got — add clarity/depth anytime for a sharper match.");
+  }
+
+  const scored = LURES.map(l => scoreLure(l, input)).sort((a,b)=> b.score - a.score).slice(0,5);
+  renderResults(scored, input);
+});
+
+function renderResults(scored, input){
+  const container = document.getElementById('results-container');
+  document.getElementById('results-label').style.display = 'flex';
+  container.innerHTML = '';
+  const colorNote = colorGuidance(input.clarity, input.weather, input.region, input.lake, input.time);
+
+  scored.forEach((r, i)=>{
+    const litBars = Math.max(1, Math.round(r.pct/20));
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-top">
+        <div>
+          <div class="result-rank">Match ${i+1}</div>
+          <div class="result-name">${r.lure.name}</div>
+          <div class="result-cat">${r.lure.cat}</div>
+        </div>
+        <div class="confidence">
+          <div class="pct">${r.pct}%</div>
+          <div class="lbl">CONFIDENCE</div>
+          <div class="signal-bars">
+            ${[1,2,3,4,5].map(n=>`<span class="${n<=litBars?'lit':''}"></span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="result-detail">
+        <div class="kv-row"><div class="k">Technique</div><div class="v">${r.lure.technique}</div></div>
+        <div class="kv-row"><div class="k">Color</div><div class="v">${colorNote}</div></div>
+        <div class="kv-row"><div class="k">Moon</div><div class="v">${input.moon.icon} ${input.moon.name} (${input.moon.illum}% illum.)${input.moon.spawnRelevant ? ' — spawn-push window' : ''}</div></div>
+        <div class="why">${r.matched.length ? '<b>Why:</b> ' + r.matched.join(' · ') + '.' : '<b>Why:</b> A solid all-around option even outside its strongest conditions.'}</div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-fav" data-lure="${r.lure.id}" data-name="${r.lure.name}">☆ Save to Favorites</button>
+        <button class="btn-log" data-lure="${r.lure.name}">Log This Trip</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll('.btn-fav').forEach(btn=>{
+    const isFav = getFavorites().some(f=>f.id===btn.dataset.lure);
+    if(isFav){ btn.classList.add('is-fav'); btn.textContent = '★ Saved'; }
+    btn.addEventListener('click', ()=> toggleFavorite(btn));
+  });
+  container.querySelectorAll('.btn-log').forEach(btn=>{
+    btn.addEventListener('click', ()=> openLogModal(btn.dataset.lure));
+  });
+}
+
+/* =========================================================================
+   FAVORITES  (localStorage)
+   ========================================================================= */
+function getFavorites(){ return JSON.parse(localStorage.getItem('bassapp_favorites') || '[]'); }
+function saveFavorites(list){ localStorage.setItem('bassapp_favorites', JSON.stringify(list)); }
+
+function toggleFavorite(btn){
+  const id = btn.dataset.lure, name = btn.dataset.name;
+  let favs = getFavorites();
+  const exists = favs.some(f=>f.id===id);
+  if(exists){
+    favs = favs.filter(f=>f.id!==id);
+    btn.classList.remove('is-fav'); btn.textContent = '☆ Save to Favorites';
+  } else {
+    favs.push({id, name, dateAdded:new Date().toISOString()});
+    btn.classList.add('is-fav'); btn.textContent = '★ Saved';
+  }
+  saveFavorites(favs);
+  renderFavorites();
+}
+
+function renderFavorites(){
+  const container = document.getElementById('favorites-container');
+  const favs = getFavorites();
+  if(!favs.length){
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7z"/></svg>
+      <p>No go-to lures saved yet. Star a recommendation and it'll show up here for quick reference at the ramp.</p>
+    </div>`;
+    return;
+  }
+  container.innerHTML = favs.slice().reverse().map(f=>`
+    <div class="log-item">
+      <div class="log-top">
+        <div class="log-lure">${f.name}</div>
+        <div class="log-date">${new Date(f.dateAdded).toLocaleDateString()}</div>
+      </div>
+      <button class="log-del" data-id="${f.id}">Remove</button>
+    </div>
+  `).join('');
+  container.querySelectorAll('.log-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      saveFavorites(getFavorites().filter(f=>f.id!==btn.dataset.id));
+      renderFavorites();
+    });
+  });
+}
+
+/* =========================================================================
+   TRIP HISTORY  (localStorage)
+   ========================================================================= */
+function getTrips(){ return JSON.parse(localStorage.getItem('bassapp_trips') || '[]'); }
+function saveTrips(list){ localStorage.setItem('bassapp_trips', JSON.stringify(list)); }
+
+const logModal = document.getElementById('log-modal');
+function openLogModal(prefillLure){
+  document.getElementById('log-lure').value = prefillLure || '';
+  document.getElementById('log-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('log-location').value = '';
+  document.getElementById('log-notes').value = '';
+  document.getElementById('log-result').value = 'Caught fish';
+  logModal.classList.add('active');
+}
+document.getElementById('btn-add-trip').addEventListener('click', ()=> openLogModal(''));
+document.getElementById('log-cancel').addEventListener('click', ()=> logModal.classList.remove('active'));
+document.getElementById('log-save').addEventListener('click', ()=>{
+  const trip = {
+    id: 'trip_' + Date.now(),
+    lure: document.getElementById('log-lure').value || 'Unspecified',
+    date: document.getElementById('log-date').value,
+    location: document.getElementById('log-location').value,
+    result: document.getElementById('log-result').value,
+    notes: document.getElementById('log-notes').value,
+    // Silent condition snapshot — powers the Patterns panel below.
+    // Older trips logged before this existed simply won't have these fields.
+    species: document.getElementById('f-species').value,
+    season: document.getElementById('f-season').value,
+    clarity: state.clarity,
+    weather: document.getElementById('f-weather').value,
+    time: document.getElementById('f-time').value,
+    waterType: document.getElementById('f-lake').value
+  };
+  const trips = getTrips();
+  trips.push(trip);
+  saveTrips(trips);
+  logModal.classList.remove('active');
+  renderHistory();
+});
+
+function renderHistory(){
+  const container = document.getElementById('history-container');
+  const trips = getTrips().slice().sort((a,b)=> new Date(b.date) - new Date(a.date));
+  if(!trips.length){
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      <p>No trips logged yet. Log a trip from a recommendation card, or add one manually above.</p>
+    </div>`;
+    return;
+  }
+  container.innerHTML = trips.map(t=>`
+    <div class="log-item">
+      <div class="log-top">
+        <div class="log-lure">${t.lure}</div>
+        <div class="log-date">${t.date ? new Date(t.date+'T00:00').toLocaleDateString() : ''}</div>
+      </div>
+      <div class="log-meta">${t.location ? t.location + ' · ' : ''}${t.result}</div>
+      ${t.notes ? `<div class="log-notes">"${t.notes}"</div>` : ''}
+      <button class="log-del" data-id="${t.id}">Delete</button>
+    </div>
+  `).join('');
+  container.querySelectorAll('.log-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      saveTrips(getTrips().filter(t=>t.id!==btn.dataset.id));
+      renderHistory();
+    });
+  });
+  renderPatterns();
+}
+
+/* =========================================================================
+   PERSONAL PATTERN ANALYTICS
+   Mines your own trip log (which now silently snapshots conditions at the
+   moment you log a trip) to surface your own best producers by clarity,
+   season, and time of day — not generic advice, your actual track record.
+   ========================================================================= */
+function computeTripPatterns(){
+  const trips = getTrips();
+  if(trips.length === 0) return null;
+
+  const successRate = Math.round((trips.filter(t=>t.result==='Caught fish').length/trips.length)*100);
+
+  function topLureIn(list){
+    const stats = {};
+    list.forEach(t=>{
+      if(!stats[t.lure]) stats[t.lure] = {count:0, caught:0};
+      stats[t.lure].count++;
+      if(t.result === 'Caught fish') stats[t.lure].caught++;
+    });
+    let best = null;
+    for(const [lure, s] of Object.entries(stats)){
+      if(!best || s.caught > best.s.caught || (s.caught === best.s.caught && s.count > best.s.count)){
+        best = {lure, s};
+      }
+    }
+    return best;
+  }
+
+  function breakdownBy(dimKey, labelFn){
+    const groups = {};
+    trips.forEach(t=>{
+      if(!t[dimKey]) return;
+      (groups[t[dimKey]] = groups[t[dimKey]] || []).push(t);
+    });
+    const rows = [];
+    for(const [val, list] of Object.entries(groups)){
+      if(list.length < 2) continue;
+      const top = topLureIn(list);
+      if(top) rows.push({ label: labelFn ? labelFn(val) : val, lure: top.lure, caught: top.s.caught, tripCount: list.length });
+    }
+    return rows.sort((a,b)=> b.tripCount - a.tripCount);
+  }
+
+  return {
+    total: trips.length,
+    successRate,
+    overallTop: topLureIn(trips),
+    byClarity: breakdownBy('clarity', v => v.charAt(0).toUpperCase()+v.slice(1)),
+    bySeason: breakdownBy('season', v => labelFor('season', v)),
+    byTime: breakdownBy('time', v => labelFor('time', v)),
+    byWaterType: breakdownBy('waterType')
+  };
+}
+
+function renderPatterns(){
+  const el = document.getElementById('patterns-container');
+  const p = computeTripPatterns();
+  if(!p || p.total < 3){
+    el.innerHTML = `<div class="panel"><p style="font-size:12.5px; color:var(--text-dim); margin:0;">Log a few more trips (3 or more) and this panel starts surfacing your own patterns — best producers by clarity, season, and time of day, from your actual log, not generic advice.</p></div>`;
+    return;
+  }
+  const rowsHTML = (rows, title) => rows.length ? `<div class="kv-row"><div class="k">${title}</div><div class="v">${rows.map(r=>`<b>${r.label}:</b> ${r.lure} (${r.caught}/${r.tripCount})`).join('<br>')}</div></div>` : '';
+
+  el.innerHTML = `
+    <div class="panel">
+      <h2>Your Patterns</h2>
+      <div class="kv-row"><div class="k">Overall</div><div class="v">${p.total} trips logged · ${p.successRate}% resulted in a catch${p.overallTop ? ` · Most-used: <b>${p.overallTop.lure}</b> (${p.overallTop.s.caught}/${p.overallTop.s.count})` : ''}</div></div>
+      ${rowsHTML(p.byClarity, 'By Clarity')}
+      ${rowsHTML(p.bySeason, 'By Season')}
+      ${rowsHTML(p.byTime, 'By Time of Day')}
+      ${rowsHTML(p.byWaterType, 'By Water Type')}
+    </div>
+  `;
+}
+
+/* =========================================================================
+   LIBRARY VIEW
+   ========================================================================= */
+function renderLibrary(){
+  const container = document.getElementById('library-container');
+  const byCategory = {};
+  LURES.forEach(l=>{ (byCategory[l.cat] = byCategory[l.cat]||[]).push(l); });
+  container.innerHTML = Object.keys(byCategory).map(cat=>`
+    <div class="panel">
+      <h2>${cat}</h2>
+      ${byCategory[cat].map(l=>`
+        <div class="lib-item">
+          <div class="lib-name">${l.name}</div>
+          <div class="lib-tags">${l.tags.join(' · ')}</div>
+          <div class="lib-desc">${l.technique}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+/* =========================================================================
+   FISHING OUTLOOK  ("Alert" tab)
+   On-demand — checked when you open the app, not a background push alert
+   (single static file, no server). Scores today/tomorrow/day-after for both
+   day and night fishing using pressure trend, cloud cover, wind, precip,
+   overnight low temp, and a light moon-phase nudge.
+   ========================================================================= */
+let notifyEnabled = false;
+
+document.getElementById('btn-check-outlook').addEventListener('click', checkOutlook);
+
+async function checkOutlook(){
+  const locInput = document.getElementById('f-outlook-location').value.trim();
+  const container = document.getElementById('outlook-container');
+  if(!locInput){ showNotice('Type a town, zip, or lake name first.'); return; }
+
+  const btn = document.getElementById('btn-check-outlook');
+  const original = btn.textContent;
+  btn.textContent = 'Checking…'; btn.disabled = true;
+
+  try{
+    const geo = await geocodeLocation(locInput);
+    if(!geo){
+      showNotice("Couldn't find that location. Try a nearby town, zip code, or adding the county/state.");
+      return;
+    }
+    const {latitude, longitude, name, admin1} = geo;
+
+    const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=surface_pressure,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&past_days=2&forecast_days=3&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`);
+    const wx = await wxRes.json();
+    lastLocationCoords = { lat: latitude, lon: longitude, utcOffsetSeconds: wx.utc_offset_seconds };
+    updateMoonDisplay();
+    const hourlyPressure = wx.hourly.surface_pressure;
+    const hourlyCloud = wx.hourly.cloud_cover;
+    const daily = wx.daily;
+    const todayIdx = 2; // past_days=2 → index 2 is "today"
+
+    const days = [];
+    for(let d = todayIdx; d <= todayIdx+2; d++){
+      const dayStart = hourlyPressure[d*24];
+      const dayEnd = hourlyPressure[d*24+23];
+      const prevDayStart = hourlyPressure[(d-1)*24];
+      if(dayStart == null || dayEnd == null || prevDayStart == null) continue;
+
+      const pressureDelta = dayEnd - dayStart;
+      const trailingTrend = dayStart - prevDayStart;
+      const cloudSlice = hourlyCloud.slice(d*24, d*24+24).filter(v=>v!=null);
+      const cloudAvg = cloudSlice.reduce((a,b)=>a+b,0) / cloudSlice.length;
+      const windMax = daily.wind_speed_10m_max[d];
+      const precip = daily.precipitation_sum[d];
+      const tempMin = daily.temperature_2m_min[d];
+
+      const dateObj = new Date();
+      dateObj.setDate(dateObj.getDate() + (d - todayIdx));
+      const dateStr = dateObj.toISOString().slice(0,10);
+      const moon = getMoonPhase(dateStr);
+      const solunar = computeSolunarTimes(dateStr, latitude, longitude, wx.utc_offset_seconds);
+      const dayLabel = d === todayIdx ? 'Today' : (d === todayIdx+1 ? 'Tomorrow' : dateObj.toLocaleDateString(undefined,{weekday:'long'}));
+
+      days.push(scoreOutlookDay({dayLabel, dateStr, pressureDelta, trailingTrend, cloudAvg, windMax, precip, tempMin, moon, solunar}));
+    }
+
+    renderOutlook(days, name, admin1);
+  }catch(err){
+    showNotice("Couldn't reach the weather service. Check your connection and try again.");
+  }finally{
+    btn.textContent = original; btn.disabled = false;
+  }
+}
+
+function scoreOutlookDay({dayLabel, dateStr, pressureDelta, trailingTrend, cloudAvg, windMax, precip, tempMin, moon, solunar}){
+  let dayScore = 50;
+  const dayFactors = [];
+
+  if(pressureDelta <= -1.5){ dayScore += 20; dayFactors.push('Pressure falling — aggressive reaction-bite window'); }
+  else if(trailingTrend >= 2 && cloudAvg < 30){ dayScore -= 20; dayFactors.push('Bluebird post-frontal sky — expect a tougher, finesse bite'); }
+  else if(Math.abs(pressureDelta) < 1 && Math.abs(trailingTrend) < 1){ dayScore += 12; dayFactors.push('Stable pressure — consistent conditions'); }
+
+  if(cloudAvg > 60){ dayScore += 8; dayFactors.push('Overcast skies favor moving baits all day'); }
+  if(windMax >= 8 && windMax <= 20){ dayScore += 6; dayFactors.push('Light-to-moderate wind creates a favorable ripple'); }
+  else if(windMax > 25){ dayScore -= 8; dayFactors.push('Rough wind — tough boat control, factor in safety'); }
+
+  if(precip > 0 && precip < 0.4){ dayScore += 5; dayFactors.push('Light rain can trigger feeding activity'); }
+  else if(precip >= 0.4){ dayScore -= 5; dayFactors.push('Heavier rain — plan around comfort and safety'); }
+
+  dayScore = Math.max(0, Math.min(100, Math.round(dayScore)));
+
+  let nightScore = Math.round(dayScore * 0.7);
+  const nightFactors = [];
+  if(tempMin >= 60){ nightScore += 20; nightFactors.push('Warm overnight low — good night-bite conditions'); }
+  else if(tempMin < 45){ nightScore -= 30; nightFactors.push('Cold night — night fishing is mainly a warm-water tactic; expect low activity'); }
+  else{ nightFactors.push('Moderate overnight temps — a night bite is possible but not peak'); }
+
+  if(moon.name === 'Full Moon'){ nightScore += 3; nightFactors.push('Full moon — minor extra low-light visibility (weak evidence, not strongly established)'); }
+  else if(moon.name === 'New Moon'){ nightScore += 2; nightFactors.push('New moon — some anglers report a stronger bite in total darkness (weak evidence)'); }
+
+  // Light nudge if a major solunar period (moon overhead/underfoot) falls during dark hours
+  [solunar.transit, solunar.antitransit].forEach(ev => {
+    if(ev){
+      const hr = ev.getHours();
+      if(hr >= 20 || hr < 6){ nightScore += 4; nightFactors.push(`Major period falls at night (~${formatLocalTime(ev)}) — informational, low confidence`); }
+    }
+  });
+
+  nightScore = Math.max(0, Math.min(100, Math.round(nightScore)));
+
+  const verdict = s => s >= 75 ? 'Excellent' : (s >= 60 ? 'Good' : (s >= 45 ? 'Fair' : 'Tough'));
+
+  return { dayLabel, dateStr, dayScore, dayVerdict: verdict(dayScore), dayFactors,
+            nightScore, nightVerdict: verdict(nightScore), nightFactors, moon, solunar };
+}
+
+function renderOutlook(days, name, admin1){
+  const container = document.getElementById('outlook-container');
+  if(!days.length){ container.innerHTML = ''; return; }
+
+  let best = {label:'', score:-1, kind:''};
+  days.forEach(d=>{
+    if(d.dayScore > best.score) best = {label:d.dayLabel + ' (Day)', score:d.dayScore, kind:d.dayVerdict};
+    if(d.nightScore > best.score) best = {label:d.dayLabel + ' Night', score:d.nightScore, kind:d.nightVerdict};
+  });
+
+  const bestBanner = `
+    <div class="panel" style="border-left:3px solid var(--accent-amber);">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em;">Best Window — ${name}${admin1?', '+admin1:''}</div>
+      <div style="font-family:'Bitter',serif; font-weight:700; font-size:18px; color:var(--accent-amber); margin-top:4px;">🎣 ${best.label} — ${best.kind} (${best.score})</div>
+    </div>
+  `;
+
+  const dayCards = days.map(d => `
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-rank">${d.dateStr}</div>
+          <div class="result-name">${d.dayLabel}</div>
+        </div>
+      </div>
+      <div class="result-detail">
+        <div class="kv-row"><div class="k">Day</div><div class="v"><b style="color:var(--accent-amber);">${d.dayScore}/100 — ${d.dayVerdict}</b><br>${d.dayFactors.join(' · ')}</div></div>
+        <div class="kv-row"><div class="k">Night</div><div class="v"><b style="color:var(--accent-olive);">${d.nightScore}/100 — ${d.nightVerdict}</b><br>${d.nightFactors.join(' · ')} · ${d.moon.icon} ${d.moon.name}</div></div>
+        <div class="kv-row"><div class="k">Solunar</div><div class="v" style="font-family:'IBM Plex Mono',monospace; font-size:12px;">Major: ${formatLocalTime(d.solunar.transit)} · ${formatLocalTime(d.solunar.antitransit)}<br>Minor: ${formatLocalTime(d.solunar.moonrise)} · ${formatLocalTime(d.solunar.moonset)}</div></div>
+      </div>
+    </div>
+  `).join('');
+
+  const notifyRow = `
+    <div class="panel">
+      <label style="display:flex; align-items:center; gap:8px; margin:0; text-transform:none; font-weight:500; letter-spacing:0; color:var(--text-cream); font-size:13px;">
+        <input type="checkbox" id="chk-notify" style="width:16px; height:16px;">
+        Notify me in this tab if a window scores Excellent (75+)
+      </label>
+      <small class="hint">Only works while this tab stays open in your browser — it can't send a real push notification once the app is closed.</small>
+    </div>
+  `;
+
+  container.innerHTML = bestBanner + notifyRow + dayCards;
+
+  const chk = document.getElementById('chk-notify');
+  chk.addEventListener('change', async ()=>{
+    if(chk.checked){
+      if(Notification.permission !== 'granted'){
+        const perm = await Notification.requestPermission();
+        if(perm !== 'granted'){ chk.checked = false; return; }
+      }
+      notifyEnabled = true;
+      if(best.score >= 75){
+        new Notification('Bass Advisor — Good Conditions', { body: `${best.label}: ${best.kind} (${best.score}/100) near ${name}.` });
+      }
+    } else {
+      notifyEnabled = false;
+    }
+  });
+}
+
+/* =========================================================================
+   TAB NAVIGATION
+   ========================================================================= */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if(btn.dataset.view === 'history') renderHistory();
+    if(btn.dataset.view === 'favorites') renderFavorites();
+    if(btn.dataset.view === 'library') renderLibrary();
+  });
+});
+
+/* Init */
+renderHistory();
+renderFavorites();
+renderLibrary();
+</script>
+</body>
+</html>
